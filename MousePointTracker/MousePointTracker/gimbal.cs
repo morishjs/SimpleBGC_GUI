@@ -77,38 +77,7 @@ namespace gimbal
         private const int sRoll = 30;
         private const int sYaw = 30;
 
-        //Don't care about this. just for debugging 
-        //public class readWorker
-        //{   
-        //    public readWorker()
-        //    {
-               
-        //    }
-
-        //    // This method will be called when the thread is started.
-        //    public void DoWork()
-        //    {
-        //        while (!_shouldStop)
-        //        {
-
-        //            //일정시간동안 getAngle()을 호출한다. 
-        //            Thread.Sleep(30); //1 per 30ms
-        //            SerialProtocol.getAngle();
-        //        }
-        //        Console.WriteLine("worker thread: terminating gracefully.");
-        //        //timer.Stop();
-        //    }
-        //    public void RequestStop()
-        //    {
-        //        _shouldStop = true;
-                
-        //    }
-            
-        //    // member will be accessed by multiple threads.
-        //    private volatile bool _shouldStop = false;
-
-        //}
-
+ 
 
         //Writer : Junsuk Park
         //Function : setAngle()
