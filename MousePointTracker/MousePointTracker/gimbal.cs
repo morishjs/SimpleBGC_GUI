@@ -87,7 +87,7 @@ namespace gimbal
         public static void setAngle(int roll, int pitch, int yaw, ref ControlCommandStructure cCmd)
         {
 
-            byte[] byteRead;
+            
             RealtimeDataStructure rData = rtD;
             cCmd.setMode(MODE_ANGLE);
             cCmd.setAnglePitch(pitch);

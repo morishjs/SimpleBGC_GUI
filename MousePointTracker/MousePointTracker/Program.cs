@@ -47,8 +47,7 @@ namespace MousePointTracker
         [DllImport("kernel32.dll")]
         extern static short QueryPerformanceFrequency(ref long x);
 
-        static double herz = 0;
-        static double elapsedTime;
+        static double herz = 0;       
         static long freq;
 
         private static int mouseX = 0, mouseY = 0;
@@ -221,7 +220,7 @@ namespace MousePointTracker
             // Update the mouse path with the mouse information
             Point mouseDownLocation = new Point(e.X, e.Y);
             angle = SerialProtocol.getAngle();
-            string eventString = null;
+            
             switch (e.Button)
             {
                 case MouseButtons.Left:
