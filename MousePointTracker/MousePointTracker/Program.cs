@@ -4,7 +4,9 @@
 //#############################################################
 //**************************************************************
 
-
+//시나리오
+//1. 손은 가만히 있다고 가정했을 때, 짐벌이 움직여서(Command 현재 200Hz)... 움직이는 속도 고려해야함(짐벌의 이동속도는 빠르지만, 레이저 에너지 충전이 느림)
+//2. 일정시간(2.5초) 마우스 포인터의 움직임이 없으면 Laser Shot!
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -14,6 +16,8 @@ using System.Windows.Forms;
 using gimbal;
 using System.Runtime.InteropServices;
 using System.Threading;
+
+
 
 namespace MousePointTracker
 {
@@ -37,7 +41,8 @@ namespace MousePointTracker
 
         private const int fontSize = 40;
 
-        static SerialProtocol p = new SerialProtocol("COM4", 115200);
+        static SerialProtocol p = new SerialProtocol("COM5", 115200);
+        static laser Laser = new laser();
   
         static ControlCommandStructure cCmd = new ControlCommandStructure();
         static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
@@ -48,8 +53,7 @@ namespace MousePointTracker
         [DllImport("kernel32.dll")]
         extern static short QueryPerformanceFrequency(ref long x);
 
-        static double herz = 0;
-        static double elapsedTime;
+        static double herz = 0;        
         static long freq;
 
         private static int mouseX = 0, mouseY = 0;
@@ -181,7 +185,8 @@ namespace MousePointTracker
             this.panel1.Size = new System.Drawing.Size(500, 500);   
             this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
-            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            //this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            
             // Set up how the form should be displayed and add the controls to the form.
             this.ClientSize = new System.Drawing.Size(500, 500);
             this.Controls.AddRange(new System.Windows.Forms.Control[] {
@@ -205,10 +210,13 @@ namespace MousePointTracker
            
             double time = herz * 1000;
             int h = (int)(1000 / time);
-            this.label6.Text = h.ToString() + "Hz";
-            
+
+            this.label6.Text = h.ToString() + "Hz";            
             this.label3.Text = "X: " + mouseX.ToString();
-            this.label4.Text = "Y: " + mouseY.ToString();                        
+            this.label4.Text = "Y: " + mouseY.ToString();
+            // Need to implement Thread.
+            Laser.shot();
+            
         }
 
         //Writer : Junsuk Park
@@ -219,7 +227,7 @@ namespace MousePointTracker
             // Update the mouse path with the mouse information
             Point mouseDownLocation = new Point(e.X, e.Y);
             angle = SerialProtocol.getAngle();
-            string eventString = null;
+            
             switch (e.Button)
             {
                 case MouseButtons.Left:
