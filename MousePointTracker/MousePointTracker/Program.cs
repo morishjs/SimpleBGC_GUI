@@ -62,8 +62,6 @@ namespace MousePointTracker
         //Function : Read mouse position and send command to gimbal. (200Hz)
         public class ReadWorker
         {
-
-
             public ReadWorker()
             {
 
