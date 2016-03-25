@@ -4,7 +4,7 @@ using System.Text;
 using System.IO.Ports;
 using System.Timers;
 
-
+//Consider about Exception about port connection.
 namespace gimbal
 {
 
@@ -66,24 +66,38 @@ namespace gimbal
         //Data structure when read real time values of the gimbal.
         protected static RealtimeDataStructure rtD = new RealtimeDataStructure();
 
-        //"COM4" is variable, It depends on computers. Junsuk Com is 'COM4'
+        
         //Baudrate is fixed at 115200. Other baudrate makes the gimbal work inproperly
-        private static SerialPort port = new SerialPort("COM4", 115200);
-        private byte[] byteArray = { 62, 67, 13, 80, 2, 85, 5, 85, 5, 85, 5, 85, 5, 85, 5, 85, 5, 30 };
+        private static SerialPort port;
         private static System.Timers.Timer timer = null;
-
         //Gimbal speed.
         private const int sPitch = 30;
         private const int sRoll = 30;
         private const int sYaw = 30;
 
- 
+        public static String ERROR_MSG;
+        //
+        // EX) "COM4" is variable, It depends on computers. Junsuk Com is 'COM4'
+        public static bool initPort(String com, int baudrate)
+        {
+            port = new SerialPort(com, baudrate);
+            try
+            {
+                port.Open();
+                return true;
+            }
+            catch
+            {
+                ERROR_MSG = "Port is not opened";
+                return false;
+            }
+
+        }
 
         //Writer : Junsuk Park
         //Function : setAngle()
         //Set the speed and angle and send the command to the gimbal.
         //desired angle and speed values are decorated by 'ControlCommandStructure' 
-                
         public static void setAngle(int roll, int pitch, int yaw, ref ControlCommandStructure cCmd)
         {
 
@@ -151,13 +165,7 @@ namespace gimbal
                 float[] angle = rData.getAngle();
                 float[] frameAngle = rData.getRc_angle();
 
-                //Console.WriteLine("받을 때 "+DateTime.Now + ":" + DateTime.Now.Millisecond);
-                //Console.WriteLine("Roll: " + rData.getRoll());
-                //Console.WriteLine("Pitch: " + rData.getPitch());
-                //Console.WriteLine("Yaw: " + rData.getYaw());
                 
-                //Console.WriteLine("");
-
                 lines[0] = rData.getRoll().ToString();
                 lines[1] = rData.getPitch().ToString();
                 lines[2] = rData.getYaw().ToString();
@@ -179,25 +187,7 @@ namespace gimbal
             else return new float[0];
 
         }
-
-
-
-
-        public static void timer_Elasped(object sender, ElapsedEventArgs e)
-        {
-            try
-            {              
-                
-                SerialProtocol.getAngle();
-                
-            }
-            finally
-            {
-                
-            }      
-   
-        }
-
+        
       //Just for debugging code, console mode.
       /*  static void Main(string[] args)
         {
@@ -410,18 +400,12 @@ namespace gimbal
             return sb.ToString();
         }
         
+        
 
-        public byte[] getByteArray()
-        {
-            return byteArray;
-        }
-
-
-
-        public SerialProtocol()
+        public SerialProtocol(String com, int baudrate)
         {
             // Begin communications
-            port.Open();
+            initPort(com, baudrate);
         }
 
         protected static bool verifyChecksum(byte[] data)
@@ -485,8 +469,14 @@ namespace gimbal
 
                     if (verifyChecksum(headerAndBodyArray))
                     {
-          
-                        port.Write(headerAndBodyArray, 0, headerAndBodyArray.Length);
+                        try { 
+                            port.Write(headerAndBodyArray, 0, headerAndBodyArray.Length);
+                        }
+                        //Error occur when the port is closing.
+                        catch(InvalidOperationException ex)
+                        {
+                            ERROR_MSG = "Port is not opened";
+                        }
                         return true;
                     }
                     else return false;

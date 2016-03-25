@@ -33,11 +33,12 @@ namespace MousePointTracker
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        
+
 
         private const int fontSize = 40;
 
-        static SerialProtocol p = new SerialProtocol();
+        static SerialProtocol p = new SerialProtocol("COM4", 115200);
+  
         static ControlCommandStructure cCmd = new ControlCommandStructure();
         static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
 
@@ -107,9 +108,10 @@ namespace MousePointTracker
         static void Main()
         {
 
-            QueryPerformanceFrequency(ref freq);
-
-
+            QueryPerformanceFrequency(ref freq);           
+            
+       
+        
             //ReadWorker class initialized
             ReadWorker workerObject = new ReadWorker();
             Thread workerThread = new Thread(workerObject.DoWork);
@@ -125,8 +127,6 @@ namespace MousePointTracker
         //Just about Widget ( panel, label etc..)
         public MousePointTracker()
         {
-            
-
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();            
             this.label2 = new System.Windows.Forms.Label();
